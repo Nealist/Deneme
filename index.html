@@ -3,123 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexVocal AI | Auth System</title>
+    <title>NexVocal AI | Pro & Premium Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg: #020202; --card: #0a0a0a; --accent: #3b82f6; }
+        :root { --bg: #020202; --accent: #3b82f6; --premium: #f59e0b; }
         body { background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* Auth Container */
-        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle at center, #111 0%, #000 100%); }
-        .auth-box { width: 90%; max-width: 400px; padding: 35px; background: var(--card); border: 1px solid #1a1a1a; border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        
-        .pro-input { background: #111; border: 1px solid #222; padding: 14px; border-radius: 14px; width: 100%; font-size: 14px; color: white; outline: none; transition: 0.3s; }
-        .pro-input:focus { border-color: var(--accent); background: #151515; }
-
-        .dashboard-grid { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
+        .dashboard-grid { display: grid; grid-template-columns: 380px 1fr; height: 100vh; }
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+
+        /* Auth UI */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .auth-box { width: 90%; max-width: 400px; padding: 35px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 28px; }
+        .pro-input { background: #111; border: 1px solid #222; padding: 14px; border-radius: 14px; width: 100%; font-size: 14px; color: white; outline: none; }
         
+        /* Premium Teması */
+        .premium-border { border: 2px solid var(--premium) !important; box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+        .premium-text { color: var(--premium) !important; }
+        .premium-bg { background: var(--premium) !important; color: black !important; }
+
+        /* Tabs */
+        .tab-btn { padding: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; flex: 1; border-radius: 10px; transition: 0.3s; }
+        .tab-active { background: #111; color: var(--accent); border: 1px solid #222; }
+
         .phone-mockup { width: 260px; aspect-ratio: 9/19; border: 10px solid #111; border-radius: 40px; background: #000; position: relative; overflow: hidden; }
         #preview-subtitle { position: absolute; width: 85%; left: 7.5%; text-align: center; padding: 8px; font-weight: 900; bottom: 20%; }
         
-        .btn-google { background: #fff; color: #000; font-weight: 700; width: 100%; padding: 12px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; font-size: 13px; }
-        .btn-google:hover { background: #f0f0f0; transform: translateY(-1px); }
-        
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .locked-feature { opacity: 0.4; pointer-events: none; position: relative; }
+        .locked-feature::after { content: '🔒 PRO'; position: absolute; top: 0; right: 0; font-size: 9px; background: #f59e0b; color: black; padding: 2px 5px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
-        
-        <div id="login-pane" class="auth-box space-y-6 fade-in">
+        <div id="login-pane" class="auth-box space-y-6">
             <div class="text-center">
-                <div class="w-14 h-14 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
-                    <i class="fa-solid fa-right-to-bracket text-2xl text-white"></i>
-                </div>
-                <h2 class="text-2xl font-black tracking-tight">TEKRAR HOŞ GELDİN</h2>
-                <p class="text-gray-500 text-[11px] uppercase tracking-widest mt-1">Hesabınıza giriş yapın</p>
+                <h2 class="text-2xl font-black italic">NEXVOCAL <span class="text-blue-500">AI</span></h2>
+                <p class="text-gray-500 text-[10px] tracking-[3px] mt-2">Giriş Yap veya Kayıt Ol</p>
             </div>
-
             <div class="space-y-3">
-                <input type="email" id="login-email" placeholder="E-posta" class="pro-input">
-                <input type="password" id="login-pass" placeholder="Şifre" class="pro-input">
-                <button onclick="handleEmailAuth('login')" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-sm hover:bg-blue-700 transition">GİRİŞ YAP</button>
+                <input type="email" id="auth-email" placeholder="E-posta" class="pro-input">
+                <input type="password" id="auth-pass" placeholder="Şifre" class="pro-input">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs">SİSTEME GİR</button>
             </div>
-
-            <div class="relative flex py-2 items-center"><div class="flex-grow border-t border-white/5"></div><span class="flex-shrink mx-4 text-gray-700 text-[10px] font-bold">VEYA</span><div class="flex-grow border-t border-white/5"></div></div>
-
-            <button onclick="handleGoogleLogin()" class="btn-google"><i class="fa-brands fa-google text-lg"></i> GOOGLE İLE GİRİŞ YAP</button>
-
-            <p class="text-center text-[11px] text-gray-500 mt-4">
-                Hesabın yok mu? <button onclick="toggleAuth('register')" class="text-blue-500 font-bold hover:underline">Şimdi Kayıt Ol</button>
-            </p>
-        </div>
-
-        <div id="register-pane" class="auth-box space-y-6 hidden fade-in">
-            <div class="text-center">
-                <div class="w-14 h-14 bg-green-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-green-500/20">
-                    <i class="fa-solid fa-user-plus text-2xl text-white"></i>
-                </div>
-                <h2 class="text-2xl font-black tracking-tight">YENİ HESAP AÇ</h2>
-                <p class="text-gray-500 text-[11px] uppercase tracking-widest mt-1">3 Ücretsiz Kredi Seni Bekliyor</p>
-            </div>
-
-            <div class="space-y-3">
-                <input type="email" id="reg-email" placeholder="E-posta Adresiniz" class="pro-input">
-                <input type="password" id="reg-pass" placeholder="Güçlü Bir Şifre" class="pro-input">
-                <button onclick="handleEmailAuth('register')" class="w-full bg-green-600 py-4 rounded-xl font-bold text-sm hover:bg-green-700 transition">KAYIT OL</button>
-            </div>
-
-            <div class="relative flex py-2 items-center"><div class="flex-grow border-t border-white/5"></div><span class="flex-shrink mx-4 text-gray-700 text-[10px] font-bold">VEYA</span><div class="flex-grow border-t border-white/5"></div></div>
-
-            <button onclick="handleGoogleLogin()" class="btn-google"><i class="fa-brands fa-google text-lg"></i> GOOGLE İLE KAYIT OL</button>
-
-            <p class="text-center text-[11px] text-gray-500 mt-4">
-                Zaten üye misin? <button onclick="toggleAuth('login')" class="text-blue-500 font-bold hover:underline">Giriş Yap</button>
-            </p>
+            <button onclick="handleGoogle()" class="w-full bg-white text-black py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2">
+                <i class="fa-brands fa-google"></i> GOOGLE
+            </button>
         </div>
     </div>
 
     <div id="main-app" class="dashboard-grid hidden">
-        <aside class="p-8 border-r border-white/5 space-y-10 bg-[#040404]">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                    <span id="display-name" class="text-xs font-bold text-gray-400 italic">User</span>
-                </div>
-                <button onclick="logout()" class="text-gray-600 hover:text-red-500"><i class="fa-solid fa-power-off"></i></button>
-            </div>
-            
-            <div class="space-y-6">
+        <aside class="p-8 border-r border-white/5 space-y-8 bg-[#040404] overflow-y-auto">
+            <div id="user-card" class="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between">
                 <div>
-                    <label class="text-[10px] text-gray-600 font-black uppercase mb-3 block">Video Kaynağı</label>
-                    <input type="text" placeholder="URL veya Link yapıştır..." class="pro-input">
+                    <p id="user-display" class="text-[11px] font-black">KRAL</p>
+                    <p id="status-tag" class="text-[9px] text-gray-500 font-bold uppercase">Standart Üye</p>
                 </div>
-                <div class="space-y-4">
-                    <label class="text-[10px] text-gray-600 font-black uppercase block text-center">Altyazı Özelleştirme</label>
-                    <div class="flex justify-center"><div id="picker"></div></div>
-                    <input type="range" id="y-slider" min="10" max="90" value="80" class="w-full accent-blue-600">
+                <div id="pro-badge" class="hidden"><i class="fa-solid fa-crown text-amber-500"></i></div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex bg-black p-1 rounded-xl border border-white/5">
+                    <button onclick="switchSource('link')" id="tab-link" class="tab-btn tab-active">Link Yapıştır</button>
+                    <button onclick="switchSource('file')" id="tab-file" class="tab-btn">Video Yükle</button>
+                </div>
+                
+                <div id="source-link" class="space-y-2">
+                    <input type="text" placeholder="YouTube, TikTok, Instagram URL..." class="pro-input border-blue-500/30">
+                </div>
+                
+                <div id="source-file" class="hidden">
+                    <div class="border-2 border-dashed border-white/10 p-8 rounded-2xl text-center hover:bg-white/5 transition cursor-pointer">
+                        <i class="fa-solid fa-file-video text-2xl text-gray-700 mb-2"></i>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase">MP4 / MOV Seçin</p>
+                    </div>
                 </div>
             </div>
-            <button class="w-full bg-blue-600 py-4 rounded-2xl font-black text-[10px] tracking-[0.3em] shadow-xl shadow-blue-500/20">PROSESİ BAŞLAT</button>
+
+            <div class="space-y-6">
+                <div class="flex items-center justify-between"><label class="text-[10px] font-black text-gray-500 uppercase">Renk & Konum</label></div>
+                <div class="flex justify-center"><div id="picker"></div></div>
+                <input type="range" id="y-slider" min="10" max="90" value="80" class="w-full accent-blue-600">
+
+                <div id="premium-features" class="space-y-4 pt-4 border-t border-white/5">
+                    <div class="locked-feature">
+                        <label class="text-[10px] font-black text-gray-500 uppercase">Font Seçimi</label>
+                        <select class="pro-input mt-2"><option>The Bold Font</option><option>Komika Axis</option></select>
+                    </div>
+                    <div class="locked-feature">
+                        <label class="text-[10px] font-black text-gray-500 uppercase">Altyazı Animasyonu</label>
+                        <select class="pro-input mt-2"><option>Pop-up</option><option>Typewriter</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <button id="render-btn" class="w-full bg-blue-600 py-5 rounded-2xl font-black text-[11px] tracking-[4px]">İŞLEMİ BAŞLAT</button>
         </aside>
 
-        <main class="flex items-center justify-center bg-[#010101]">
-            <div class="phone-mockup">
+        <main class="flex flex-col items-center justify-center bg-[#010101]">
+            <div id="phone-ui" class="phone-mockup">
                 <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop" class="w-full h-full object-cover opacity-20">
-                <div id="preview-subtitle" class="bg-black/90 text-blue-500 text-[10px] rounded px-3 py-1">PREVIEW MODE</div>
+                <div id="preview-subtitle" class="bg-black/90 text-blue-500 text-[10px] rounded px-2">ÖRNEK ALTYAZI</div>
             </div>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZPX9n1P2_EyZcLRyMaIkcRMAz6FKMtZI",
@@ -134,63 +128,65 @@
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
 
-        // Panel Değiştirme (Giriş <-> Kayıt)
-        window.toggleAuth = (mode) => {
-            if(mode === 'register') {
-                document.getElementById('login-pane').classList.add('hidden');
-                document.getElementById('register-pane').classList.remove('hidden');
-            } else {
-                document.getElementById('register-pane').classList.add('hidden');
-                document.getElementById('login-pane').classList.remove('hidden');
-            }
-        };
-
-        // Oturum Takibi
+        // OTURUM TAKİBİ VE PREMIUM KONTROLÜ
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-overlay').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('display-name').innerText = "KRAL " + (user.displayName || user.email.split('@')[0]).toUpperCase();
-                window.history.pushState({loggedIn: true}, "");
-            } else {
-                document.getElementById('auth-overlay').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
+                
+                const isPremium = user.email === "barankurtoglu37@gmail.com";
+                applyUserStatus(user, isPremium);
             }
         });
 
-        // Google Giriş/Kayıt
-        window.handleGoogleLogin = () => {
-            signInWithPopup(auth, provider).catch(err => alert("Hata: " + err.message));
+        function applyUserStatus(user, isPremium) {
+            document.getElementById('user-display').innerText = "KRAL " + (user.displayName || user.email.split('@')[0]).toUpperCase();
+            
+            if(isPremium) {
+                // Premium Arayüz Değişiklikleri
+                document.getElementById('status-tag').innerText = "PREMIUM ÜYE";
+                document.getElementById('status-tag').classList.add('premium-text');
+                document.getElementById('pro-badge').classList.remove('hidden');
+                document.getElementById('render-btn').classList.add('premium-bg');
+                document.getElementById('user-card').classList.add('premium-border');
+                
+                // Kilitleri kaldır
+                const locks = document.querySelectorAll('.locked-feature');
+                locks.forEach(el => {
+                    el.classList.remove('locked-feature');
+                    el.style.opacity = "1";
+                    el.style.pointerEvents = "all";
+                });
+            }
+        }
+
+        window.handleAuth = () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(err => alert("Giriş Hatası"));
         };
 
-        // E-posta Giriş/Kayıt
-        window.handleEmailAuth = (type) => {
-            const email = type === 'login' ? document.getElementById('login-email').value : document.getElementById('reg-email').value;
-            const pass = type === 'login' ? document.getElementById('login-pass').value : document.getElementById('reg-pass').value;
-            
-            if(!email || !pass) return alert("Alanları doldur kral!");
+        window.handleGoogle = () => signInWithPopup(auth, provider);
 
-            if(type === 'register') {
-                createUserWithEmailAndPassword(auth, email, pass).catch(err => alert("Kayıt Hatası: " + err.message));
+        // UI TAB SİSTEMİ
+        window.switchSource = (type) => {
+            if(type === 'link') {
+                document.getElementById('source-link').classList.remove('hidden');
+                document.getElementById('source-file').classList.add('hidden');
+                document.getElementById('tab-link').classList.add('tab-active');
+                document.getElementById('tab-file').classList.remove('tab-active');
             } else {
-                signInWithEmailAndPassword(auth, email, pass).catch(err => alert("Giriş Hatası: " + err.message));
+                document.getElementById('source-file').classList.remove('hidden');
+                document.getElementById('source-link').classList.add('hidden');
+                document.getElementById('tab-file').classList.add('tab-active');
+                document.getElementById('tab-link').classList.remove('tab-active');
             }
         };
 
-        window.logout = () => signOut(auth);
-
-        // UI Mantıkları
+        // UI Ayarları
         var colorPicker = new iro.ColorPicker("#picker", { width: 140, color: "#3b82f6", layout: [{ component: iro.ui.Wheel }] });
         colorPicker.on('color:change', c => document.getElementById('preview-subtitle').style.color = c.hexString);
         document.getElementById('y-slider').oninput = e => document.getElementById('preview-subtitle').style.bottom = (100 - e.target.value) + '%';
-
-        // Geri Tuşu Koruması
-        window.onpopstate = () => {
-            if(auth.currentUser) {
-                window.history.pushState({loggedIn: true}, "");
-                alert("Çıkış yapmak için sağ üstteki butonu kullanın.");
-            }
-        };
     </script>
 </body>
 </html>
