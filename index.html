@@ -3,136 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexVocal AI | Pro Video Localization</title>
+    <title>NexVocal AI | Pro Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg: #020202; --card: #080808; --accent: #3b82f6; }
+        :root { --bg: #020202; --accent: #3b82f6; }
         body { background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
         .dashboard-grid { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; overflow-y: auto; } }
-
-        /* Auth Overlay ve Arka Plan Resimleri */
+        
+        /* Auth Overlay */
         #auth-overlay { 
             position: fixed; inset: 0; background: #000; z-index: 1000; 
             display: flex; align-items: center; justify-content: center;
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop');
-            background-size: cover; background-position: center;
+            background-image: radial-gradient(circle at center, #111 0%, #000 100%);
         }
-
-        .auth-box { 
-            width: 100%; max-width: 420px; padding: 40px; 
-            background: rgba(10, 10, 10, 0.95); border: 1px solid #222; 
-            border-radius: 28px; backdrop-filter: blur(20px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        
-        .pro-input { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 14px; border-radius: 12px; width: 100%; font-size: 13px; outline: none; transition: 0.3s; color: white; }
+        .auth-box { width: 90%; max-width: 400px; padding: 30px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 24px; }
+        .pro-input { background: #111; border: 1px solid #222; padding: 12px; border-radius: 12px; width: 100%; font-size: 14px; color: white; outline: none; transition: 0.3s; }
         .pro-input:focus { border-color: var(--accent); }
-
-        .phone-mockup { width: 260px; aspect-ratio: 9/19; border: 10px solid #111; border-radius: 40px; background: #000; position: relative; overflow: hidden; }
-        #preview-subtitle { position: absolute; width: 85%; left: 7.5%; text-align: center; padding: 8px; font-weight: 900; bottom: 20%; transition: 0.2s; }
-
-        /* Loading Spinner */
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .phone-mockup { width: 260px; aspect-ratio: 9/19; border: 10px solid #111; border-radius: 40px; background: #000; position: relative; overflow: hidden; box-shadow: 0 0 50px rgba(59, 130, 246, 0.1); }
+        #preview-subtitle { position: absolute; width: 85%; left: 7.5%; text-align: center; padding: 8px; font-weight: 900; bottom: 20%; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
-        <div class="auth-box space-y-8">
+        <div class="auth-box space-y-6">
             <div class="text-center">
-                <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl shadow-blue-500/20">
-                    <i class="fa-solid fa-bolt-lightning text-3xl text-white"></i>
-                </div>
-                <h2 class="text-3xl font-black tracking-tighter text-white">NEXVOCAL <span class="text-blue-500 text-sm">PRO</span></h2>
-                <p class="text-gray-400 text-[11px] uppercase tracking-[0.2em] mt-2">Yapay Zeka Video Yerelleştirme</p>
+                <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center mb-4"><i class="fa-solid fa-bolt text-white"></i></div>
+                <h2 class="text-2xl font-black">NEXVOCAL <span class="text-blue-500">PRO</span></h2>
             </div>
 
-            <div class="space-y-4 pt-4">
-                <button id="login-btn" onclick="handleLogin()" class="w-full bg-white text-black font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-600 hover:text-white transition-all transform hover:scale-[1.02]">
-                    <i class="fa-brands fa-google text-xl"></i> GOOGLE İLE DEVAM ET
-                    <div id="login-loader" class="loader"></div>
-                </button>
-            </div>
-
-            <div class="pt-6 border-t border-white/5">
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-blue-500 font-bold text-lg leading-none">3</p>
-                        <p class="text-[9px] text-gray-500 uppercase mt-1">Ücretsiz Kredi</p>
-                    </div>
-                    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
-                        <p class="text-blue-500 font-bold text-lg leading-none">4K</p>
-                        <p class="text-[9px] text-gray-500 uppercase mt-1">Pro Render</p>
-                    </div>
+            <div id="email-form" class="space-y-3">
+                <input type="email" id="auth-email" placeholder="E-posta Adresi" class="pro-input">
+                <input type="password" id="auth-pass" placeholder="Şifre" class="pro-input">
+                <div class="flex gap-2">
+                    <button onclick="handleEmailAuth('login')" class="flex-1 bg-blue-600 py-3 rounded-xl font-bold text-xs uppercase">Giriş Yap</button>
+                    <button onclick="handleEmailAuth('register')" class="flex-1 border border-white/10 py-3 rounded-xl font-bold text-[10px] uppercase">Kayıt Ol</button>
                 </div>
             </div>
 
-            <p class="text-[10px] text-gray-600 text-center leading-relaxed">
-                Giriş yaparak kullanım koşullarını kabul etmiş olursunuz. <br>
-                <span class="text-blue-500/50 italic">Powered by NexVocal AI Systems</span>
-            </p>
+            <div class="flex items-center gap-4 text-gray-800"><div class="h-px bg-white/5 flex-1"></div><span class="text-[10px]">VEYA</span><div class="h-px bg-white/5 flex-1"></div></div>
+
+            <button onclick="handleGoogleLogin()" class="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-xs hover:bg-gray-200 transition">
+                <i class="fa-brands fa-google"></i> GOOGLE İLE DEVAM ET
+            </button>
         </div>
     </div>
 
-    <div class="dashboard-grid hidden" id="main-app">
-        <aside class="p-8 border-r border-white/10 space-y-10 overflow-y-auto bg-[#040404]">
-            <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
-                <div class="flex items-center gap-3">
-                    <img id="user-photo" src="" class="w-8 h-8 rounded-full border border-blue-500 hidden">
-                    <span id="user-name" class="text-[11px] font-bold text-gray-300">Yükleniyor...</span>
-                </div>
-                <button onclick="handleLogout()" class="text-gray-600 hover:text-red-500 transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+    <div id="main-app" class="dashboard-grid hidden">
+        <aside class="p-8 border-r border-white/5 space-y-8 bg-[#040404]">
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                <span id="display-name" class="text-[11px] font-bold">Kullanıcı</span>
+                <button onclick="logout()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-power-off"></i></button>
             </div>
 
-            <section class="space-y-6">
-                <div>
-                    <label class="text-[10px] text-gray-500 font-black uppercase mb-3 block tracking-widest">Video URL</label>
-                    <input type="text" placeholder="TikTok veya Reels linki..." class="pro-input">
+            <div class="space-y-4">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Video Kaynağı</label>
+                <input type="text" placeholder="Link (TikTok, Reels, Shorts)..." class="pro-input">
+                <div class="p-4 border-2 border-dashed border-white/5 rounded-xl text-center cursor-pointer hover:bg-white/5">
+                    <span class="text-[10px] text-blue-500 font-bold italic">Veya MP4 Yükleyin</span>
                 </div>
+            </div>
 
-                <div class="space-y-6">
-                    <label class="text-[10px] text-gray-500 font-black uppercase block tracking-widest text-center">Altyazı Rengi</label>
-                    <div class="flex justify-center py-4 bg-black/60 rounded-3xl border border-white/5 shadow-inner">
-                        <div id="picker"></div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex justify-between text-[10px] font-bold">
-                            <span class="text-gray-500">DİKEY POZİSYON</span>
-                            <span id="pos-val" class="text-blue-500">80%</span>
-                        </div>
-                        <input type="range" id="y-slider" min="10" max="90" value="80" class="w-full h-1 bg-white/10 rounded-full appearance-none accent-blue-600 cursor-pointer">
-                    </div>
-                </div>
-            </section>
+            <div class="space-y-6">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Stil Ayarları</label>
+                <div class="flex justify-center"><div id="picker"></div></div>
+                <input type="range" id="y-slider" min="10" max="90" value="80" class="w-full accent-blue-600">
+            </div>
 
-            <button class="w-full bg-blue-600 py-5 rounded-2xl font-black text-xs tracking-[0.3em] shadow-xl shadow-blue-600/20 hover:bg-blue-500 transition transform hover:-translate-y-1">
-                RENDER PROCESSED <i class="fa-solid fa-bolt ml-2"></i>
-            </button>
+            <button class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs tracking-widest shadow-lg shadow-blue-500/20">İŞLEMİ BAŞLAT</button>
         </aside>
 
-        <main class="flex flex-col items-center justify-center p-8 bg-[#010101] relative">
-            <div class="phone-mockup shadow-[0_0_100px_rgba(59,130,246,0.1)]">
-                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-40">
-                <div id="preview-subtitle" class="bg-black/80 text-blue-500 text-[10px] rounded px-2 py-1 leading-tight">PREVIEW CAPTION STYLE</div>
-                <div class="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-4 bg-[#111] rounded-full"></div>
-            </div>
-            <div class="mt-8 bg-blue-500/5 px-6 py-2 rounded-full border border-blue-500/10">
-                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest animate-pulse">Live Preview Mode Active</p>
+        <main class="flex flex-col items-center justify-center bg-[#010101]">
+            <div class="phone-mockup">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-30">
+                <div id="preview-subtitle" class="bg-black/80 text-blue-500 text-[10px] rounded px-2">ÖRNEK ALTYAZI</div>
             </div>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Senin verdiğin SDK Bilgileri
         const firebaseConfig = {
             apiKey: "AIzaSyDZPX9n1P2_EyZcLRyMaIkcRMAz6FKMtZI",
             authDomain: "nexvocalai.firebaseapp.com",
@@ -146,48 +103,54 @@
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
 
-        // 1. OTURUM KONTROLÜ (Sayfa yenilense de atmaz)
+        // OTURUM DURUMU KONTROLÜ
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('auth-overlay').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('user-name').innerText = user.displayName;
-                if(user.photoURL) {
-                    document.getElementById('user-photo').src = user.photoURL;
-                    document.getElementById('user-photo').classList.remove('hidden');
-                }
+                document.getElementById('display-name').innerText = user.displayName || user.email.split('@')[0];
+                // Geri tuşu koruması: Dashboard'dayken geri basınca çıkmasın
+                window.history.pushState({page: 1}, "", "");
             } else {
-                document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('auth-overlay').classList.remove('hidden');
                 document.getElementById('main-app').classList.add('hidden');
             }
         });
 
-        // 2. GİRİŞ YAPMA FONKSİYONU
-        window.handleLogin = function() {
-            document.getElementById('login-loader').style.display = 'block';
-            signInWithPopup(auth, provider).then((result) => {
-                console.log("Başarılı");
-            }).catch((err) => {
-                alert("Giriş Hatası: " + err.message);
-                document.getElementById('login-loader').style.display = 'none';
-            });
+        // GOOGLE GİRİŞ
+        window.handleGoogleLogin = () => {
+            signInWithPopup(auth, provider).catch(err => alert("Hata: " + err.message));
         };
 
-        // 3. ÇIKIŞ YAPMA
-        window.handleLogout = function() {
-            signOut(auth);
+        // E-POSTA KAYIT VE GİRİŞ
+        window.handleEmailAuth = (type) => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            if(!email || !pass) return alert("Bilgileri doldur kral!");
+
+            if(type === 'register') {
+                createUserWithEmailAndPassword(auth, email, pass).catch(err => alert("Kayıt Hatası: " + err.message));
+            } else {
+                signInWithEmailAndPassword(auth, email, pass).catch(err => alert("Giriş Hatası: " + err.message));
+            }
         };
 
-        // UI MANTIKLARI
-        var colorPicker = new iro.ColorPicker("#picker", { width: 160, color: "#3b82f6", layout: [{ component: iro.ui.Wheel }] });
-        colorPicker.on('color:change', function(color) { 
-            document.getElementById('preview-subtitle').style.color = color.hexString; 
-        });
+        window.logout = () => signOut(auth);
 
-        document.getElementById('y-slider').addEventListener('input', (e) => {
+        // UI Kontrolleri
+        var colorPicker = new iro.ColorPicker("#picker", { width: 140, color: "#3b82f6", layout: [{ component: iro.ui.Wheel }] });
+        colorPicker.on('color:change', c => document.getElementById('preview-subtitle').style.color = c.hexString);
+        document.getElementById('y-slider').oninput = e => {
             document.getElementById('preview-subtitle').style.bottom = (100 - e.target.value) + '%';
-            document.getElementById('pos-val').innerText = e.target.value + '%';
-        });
+        };
+
+        // Geri Tuşu Mantığı
+        window.onpopstate = function() {
+            if(auth.currentUser) {
+                window.history.pushState({page: 1}, "", "");
+                alert("Çıkış yapmak için sağ üstteki çıkış butonunu kullanın.");
+            }
+        };
     </script>
 </body>
 </html>
