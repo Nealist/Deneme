@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexVocal AI | Auth Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #020202; --card: #080808; --accent: #3b82f6; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        .dashboard-grid { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
+        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; overflow-y: auto; } }
+
+        /* Modern Auth Overlay */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .auth-box { width: 100%; max-width: 400px; padding: 40px; background: #050505; border: 1px solid #111; border-radius: 24px; box-shadow: 0 0 100px rgba(59,130,246,0.05); }
+        
+        .pro-input { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 14px; border-radius: 12px; width: 100%; font-size: 13px; outline: none; transition: 0.3s; }
+        .pro-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(59,130,246,0.1); }
+        
+        .phone-mockup { width: 260px; aspect-ratio: 9/19; border: 10px solid #111; border-radius: 40px; background: #000; position: relative; overflow: hidden; }
+        #preview-subtitle { position: absolute; width: 85%; left: 7.5%; text-align: center; padding: 8px; font-weight: 900; }
+        
+        .btn-primary { background: var(--accent); color: white; font-weight: 800; padding: 14px; border-radius: 12px; transition: 0.3s; width: 100%; font-size: 13px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59,130,246,0.2); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-overlay">
+        <div class="auth-box space-y-8">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-black tracking-tighter">NEXVOCAL <span class="text-blue-500 text-sm">PRO</span></h2>
+                <p class="text-gray-500 text-[10px] uppercase tracking-widest mt-1">Devam etmek için giriş yapın</p>
+            </div>
+
+            <div class="space-y-4">
+                <input type="email" placeholder="E-posta Adresi" class="pro-input">
+                <input type="password" placeholder="Şifre" class="pro-input">
+                <button onclick="accessDashboard()" class="btn-primary">GİRİŞ YAP</button>
+            </div>
+
+            <div class="flex items-center gap-4 text-gray-700">
+                <div class="h-px bg-gray-900 flex-1"></div>
+                <span class="text-[10px] font-bold">VEYA</span>
+                <div class="h-px bg-gray-900 flex-1"></div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="accessDashboard()" class="w-full bg-white text-black font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+                    <i class="fa-brands fa-google text-lg"></i> GOOGLE İLE KAYIT OL
+                </button>
+            </div>
+
+            <p class="text-[10px] text-gray-500 text-center">
+                Hesabın yok mu? <a href="#" class="text-blue-500 font-bold hover:underline">Şimdi ücretsiz kayıt ol</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="dashboard-grid hidden" id="main-app">
+        
+        <aside class="p-8 border-r border-white/5 space-y-10 overflow-y-auto bg-[#040404]">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-[10px]"><i class="fa-solid fa-user"></i></div>
+                    <span class="text-[11px] font-bold text-gray-300">Hoş geldin, Kral</span>
+                </div>
+                <span class="text-[9px] bg-blue-500/10 text-blue-500 px-2 py-1 rounded border border-blue-500/20 font-black">KREDİ: 3/3</span>
+            </div>
+
+            <section class="space-y-6">
+                <div>
+                    <label class="text-[10px] text-gray-600 font-bold uppercase block mb-3">Media Source</label>
+                    <input type="text" placeholder="URL yapıştırın..." class="pro-input">
+                </div>
+
+                <div class="space-y-6">
+                    <label class="text-[10px] text-gray-600 font-bold uppercase block">Subtitle Customization</label>
+                    <div class="flex justify-center py-4 bg-black/40 rounded-2xl border border-white/5">
+                        <div id="picker"></div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-[10px] mono">
+                            <span class="text-gray-500">VERTICAL AXIS</span>
+                            <span id="pos-val" class="text-blue-500">80%</span>
+                        </div>
+                        <input type="range" id="y-slider" min="10" max="90" value="80" class="w-full accent-blue-600">
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-black border border-white/5 rounded-xl">
+                        <span class="text-[11px] font-bold">BACKGROUND BOX</span>
+                        <input type="checkbox" id="bg-check" class="w-4 h-4 accent-blue-600" checked>
+                    </div>
+                </div>
+            </section>
+
+            <button class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs tracking-[0.2em] shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition">GENERATE VIDEO <i class="fa-solid fa-wand-sparkles ml-2"></i></button>
+        </aside>
+
+        <main class="flex flex-col items-center justify-center p-8 relative">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="phone-mockup shadow-2xl shadow-blue-500/5">
+                    <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-40">
+                    <div id="preview-subtitle" class="bg-black text-blue-500 text-[10px] rounded leading-tight">PREVIEW CAPTION</div>
+                </div>
+
+                <div class="w-full max-w-sm space-y-8">
+                    <div class="p-8 border border-white/5 rounded-3xl bg-gradient-to-b from-white/5 to-transparent">
+                        <h2 class="text-2xl font-black italic mb-4 tracking-tighter uppercase"><i class="fa-solid fa-crown text-amber-500 mr-2"></i>PRO PLAN</h2>
+                        <ul class="text-[11px] space-y-4 text-gray-500">
+                            <li><i class="fa-solid fa-bolt text-blue-500 mr-3"></i> 2K Ultra HD Resolution</li>
+                            <li><i class="fa-solid fa-bolt text-blue-500 mr-3"></i> No Watermarks</li>
+                            <li><i class="fa-solid fa-bolt text-blue-500 mr-3"></i> Priority AI Queue</li>
+                        </ul>
+                        <div class="mt-8 text-3xl font-black">$19.99 <span class="text-xs text-gray-700 font-normal italic">/monthly</span></div>
+                        <button class="w-full mt-6 bg-white text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">Get Lifetime Access</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Giriş Yapınca Dashboard'a Geç
+        function accessDashboard() {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        // Renk Seçici
+        var colorPicker = new iro.ColorPicker("#picker", {
+            width: 150, color: "#3b82f6", layout: [{ component: iro.ui.Wheel }]
+        });
+
+        const subtitle = document.getElementById('preview-subtitle');
+        const slider = document.getElementById('y-slider');
+        const posVal = document.getElementById('pos-val');
+        const bgCheck = document.getElementById('bg-check');
+
+        colorPicker.on('color:change', function(color) { subtitle.style.color = color.hexString; });
+        slider.addEventListener('input', (e) => {
+            subtitle.style.bottom = (100 - e.target.value) + '%';
+            posVal.innerText = e.target.value + '%';
+        });
+        bgCheck.addEventListener('change', (e) => { subtitle.style.backgroundColor = e.target.checked ? 'black' : 'transparent'; });
+    </script>
+</body>
+</html>
