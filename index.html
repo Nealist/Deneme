@@ -8,124 +8,104 @@
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --premium: #f59e0b; --bg: #050505; }
+        :root { --p: #f59e0b; }
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .main-container { display: flex; flex-direction: column; height: 100vh; }
-        @media (min-width: 1024px) { .main-container { flex-direction: row; } }
-        .settings-panel { flex: 1; padding: 20px; overflow-y: auto; background: var(--bg); border-right: 1px solid #111; }
-        .preview-panel { flex: 0.7; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
-        .phone-mockup { width: 170px; aspect-ratio: 9/16; background: #111; border-radius: 25px; position: relative; overflow: hidden; border: 3px solid #333; }
-        #sub-preview { 
+        .panel { height: 100vh; display: flex; flex-direction: column; }
+        @media (min-width: 1024px) { .panel { flex-direction: row; } }
+        .sidebar { flex: 1; padding: 25px; background: #050505; border-right: 1px solid #111; overflow-y: auto; }
+        .viewer { flex: 0.8; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+        .phone { width: 170px; aspect-ratio: 9/16; background: #111; border-radius: 30px; border: 3px solid #222; position: relative; overflow: hidden; }
+        #sub { 
             position: absolute; cursor: move; padding: 6px 12px; border-radius: 8px;
-            font-weight: 900; font-size: 16px; text-align: center; white-space: nowrap;
+            font-weight: 900; font-size: 16px; white-space: nowrap;
             user-select: none; touch-action: none; background: rgba(0,0,0,0.8); color: #fff;
             top: 45%; left: 10%;
         }
-        .pro-input { background: #111; border: 1px solid #222; padding: 12px; border-radius: 12px; width: 100%; color: white; outline: none; font-size: 13px; }
-        .tab-btn { flex: 1; padding: 10px; font-size: 10px; font-weight: 800; border-radius: 10px; border: 1px solid #222; color: #666; }
-        .tab-active { border-color: var(--premium); color: white; background: #1a1405; }
+        .input-style { background: #111; border: 1px solid #222; padding: 14px; border-radius: 12px; width: 100%; font-size: 13px; outline: none; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <aside class="settings-panel space-y-6">
+    <div class="panel">
+        <aside class="sidebar space-y-6">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-black italic">ESMARAN <span class="text-amber-500">AI</span></h1>
-                <span class="text-[9px] text-gray-500 font-bold border border-white/10 px-2 py-1 rounded">V2.0 PRO</span>
+                <h1 class="text-2xl font-black italic">ESMARAN <span class="text-amber-500">AI</span></h1>
+                <div class="text-[9px] border border-amber-500/30 text-amber-500 px-2 py-1 rounded font-bold uppercase tracking-widest">Premium</div>
             </div>
 
-            <input type="text" id="v-url" placeholder="Video linkini buraya yapıştır..." class="pro-input">
+            <input type="text" id="url" placeholder="Video linkini buraya bırak..." class="input-style">
 
-            <div class="bg-[#0a0a0a] p-4 rounded-2xl border border-white/5 space-y-4">
-                <div id="picker" class="mx-auto flex justify-center"></div>
-                <div class="flex gap-2">
-                    <button id="t-mode" onclick="setMode('text')" class="tab-btn tab-active">YAZI RENGİ</button>
-                    <button id="b-mode" onclick="setMode('bg')" class="tab-btn">KUTU RENGİ</button>
-                </div>
-                <div class="flex items-center justify-between p-1">
-                    <span class="text-[11px] font-bold">ARKA PLAN KUTUSU</span>
-                    <input type="checkbox" id="bg-toggle" checked onchange="updateUI()" class="w-5 h-5 accent-amber-500">
+            <div class="bg-[#0a0a0a] p-5 rounded-2xl border border-white/5 space-y-5 text-center">
+                <div id="picker" class="flex justify-center"></div>
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-xs font-bold text-gray-400">ARKA PLAN KUTUSU</span>
+                    <input type="checkbox" id="bg-on" checked onchange="sync()" class="w-5 h-5 accent-amber-500">
                 </div>
             </div>
 
             <div class="space-y-2">
-                <label class="text-[10px] text-gray-500 font-bold uppercase">Yazı Boyutu</label>
-                <input type="range" id="size-range" min="12" max="50" value="20" oninput="updateUI()" class="w-full accent-amber-500">
+                <div class="flex justify-between text-[10px] font-bold text-gray-500"><span>KÜÇÜK</span><span>BÜYÜK</span></div>
+                <input type="range" id="size" min="12" max="50" value="20" oninput="sync()" class="w-full accent-amber-500">
             </div>
 
-            <button onclick="startAction()" id="main-btn" class="w-full bg-amber-500 text-black font-black py-5 rounded-2xl text-xs tracking-[3px] shadow-lg shadow-amber-500/20">VİDEOYU OLUŞTUR</button>
+            <button onclick="go()" id="btn" class="w-full bg-amber-500 text-black font-black py-5 rounded-2xl text-xs tracking-[4px] shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all">VİDEOYU OLUŞTUR</button>
         </aside>
 
-        <main class="preview-panel">
-            <div class="phone-mockup" id="phone">
-                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=500" class="w-full h-full object-cover opacity-30">
-                <div id="sub-preview">ESMARAN AI</div>
+        <main class="viewer">
+            <div class="phone" id="box">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=500" class="w-full h-full object-cover opacity-20">
+                <div id="sub">ESMARAN AI</div>
             </div>
-            <p class="text-[10px] text-gray-600 font-black mt-4 uppercase italic tracking-widest">Sürükle ve Konumlandır</p>
-        </main>
+        </aside>
     </div>
 
     <script>
-        let mode = 'text';
         let x = 0, y = 0;
-        const sub = document.getElementById('sub-preview');
-        const picker = new iro.ColorPicker("#picker", { width: 140, color: "#ffffff" });
+        const sub = document.getElementById('sub');
+        const picker = new iro.ColorPicker("#picker", { width: 150, color: "#fff" });
 
-        function setMode(m) {
-            mode = m;
-            document.getElementById('t-mode').classList.toggle('tab-active', m === 'text');
-            document.getElementById('b-mode').classList.toggle('tab-active', m === 'bg');
-        }
-
-        function updateUI() {
-            sub.style.fontSize = document.getElementById('size-range').value + 'px';
+        function sync() {
+            sub.style.fontSize = document.getElementById('size').value + 'px';
             sub.style.color = picker.color.hexString;
-            sub.style.backgroundColor = document.getElementById('bg-toggle').checked ? 'rgba(0,0,0,0.8)' : 'transparent';
+            sub.style.backgroundColor = document.getElementById('bg-on').checked ? 'rgba(0,0,0,0.8)' : 'transparent';
         }
 
-        picker.on('color:change', updateUI);
+        picker.on('color:change', sync);
 
-        // Sürükleme Mantığı
+        // Sürükleme
         let active = false, ix, iy;
-        const phone = document.getElementById('phone');
+        const box = document.getElementById('box');
         const start = (e) => { ix = (e.touches ? e.touches[0].clientX : e.clientX) - x; iy = (e.touches ? e.touches[0].clientY : e.clientY) - y; if(e.target === sub) active = true; };
         const move = (e) => { if(active) { x = (e.touches ? e.touches[0].clientX : e.clientX) - ix; y = (e.touches ? e.touches[0].clientY : e.clientY) - iy; sub.style.transform = `translate3d(${x}px, ${y}px, 0)`; } };
-        phone.addEventListener('mousedown', start); window.addEventListener('mouseup', () => active = false); window.addEventListener('mousemove', move);
-        phone.addEventListener('touchstart', start); window.addEventListener('touchend', () => active = false); phone.addEventListener('touchmove', move);
+        box.addEventListener('mousedown', start); window.addEventListener('mouseup', () => active = false); window.addEventListener('mousemove', move);
+        box.addEventListener('touchstart', start); window.addEventListener('touchend', () => active = false); box.addEventListener('touchmove', move);
 
-        async function startAction() {
-            const url = document.getElementById('v-url').value;
-            if(!url) return alert("Link boş kral!");
+        async function go() {
+            const val = document.getElementById('url').value;
+            if(!val) return alert("Link nerede kral?");
             
-            const btn = document.getElementById('main-btn');
-            btn.disabled = true; btn.innerText = "MOTOR ÇALIŞIYOR (60SN)...";
+            const btn = document.getElementById('btn');
+            btn.disabled = true; btn.innerText = "İŞLENİYOR...";
 
             try {
                 const res = await fetch('https://esmaran-api.onrender.com/process', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        url: url,
+                        url: val,
                         color: picker.color.hexString,
-                        font_size: document.getElementById('size-range').value,
-                        bg: document.getElementById('bg-toggle').checked,
-                        bg_color: "#000000",
+                        font_size: document.getElementById('size').value,
+                        bg: document.getElementById('bg-on').checked,
                         y_pos: y
                     })
                 });
-                const data = await res.json();
-                if(data.status === 'success') {
-                    btn.innerText = "BAŞARILI! İNDİRİLİYOR...";
-                    window.location.href = data.download_url;
-                } else {
-                    alert("Hata: " + data.message);
-                }
-            } catch(e) {
-                alert("Sunucu uyanıyor olabilir, lütfen 1 dakika sonra tekrar dene!");
-            } finally {
-                btn.disabled = false; btn.innerText = "VİDEOYU OLUŞTUR";
-            }
+                const d = await res.json();
+                if(d.status === 'success') {
+                    btn.innerText = "İNDİRİLİYOR...";
+                    window.location.href = d.download_url;
+                } else alert("Hata: " + d.message);
+            } catch(e) { alert("Sunucu uyanıyor olabilir, tekrar dene!"); }
+            finally { btn.disabled = false; btn.innerText = "VİDEOYU OLUŞTUR"; }
         }
     </script>
 </body>
