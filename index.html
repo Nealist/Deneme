@@ -1,119 +1,95 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Esmaran AI | Pro Studio</title>
+    <title>Esmaran AI | Final Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@900&family=Montserrat:wght@900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@900&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; overflow-x: hidden; }
-        .preview-area { position: sticky; top: 0; z-index: 50; background: #000; padding: 15px 0; border-bottom: 1px solid #111; }
-        .phone { width: 150px; aspect-ratio: 9/16; background: #111; border-radius: 20px; border: 2px solid #222; margin: 0 auto; position: relative; overflow: hidden; }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; padding: 10px; }
+        .phone { width: 140px; aspect-ratio: 9/16; background: #111; border-radius: 20px; border: 2px solid #333; margin: 0 auto; position: relative; overflow: hidden; }
         #sub { 
             position: absolute; cursor: move; text-align: center; font-weight: 900; 
-            background: rgba(0,0,0,0.8); color: #fff; padding: 8px; width: 85%; 
-            left: 7.5%; top: 40%; font-size: 15px; touch-action: none;
+            background: rgba(0,0,0,0.8); color: #fff; padding: 6px; width: 85%; 
+            left: 7.5%; top: 40%; font-size: 14px; touch-action: none;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .controls { background: #080808; padding: 20px; border-radius: 25px; border: 1px solid #1a1a1a; margin-top: 15px; }
-        .input-box { width: 100%; padding: 15px; background: #000; border: 1px solid #222; border-radius: 12px; font-size: 14px; color: #fff; outline: none; }
-        input[type="range"] { width: 100%; accent-color: #f59e0b; height: 6px; border-radius: 10px; -webkit-appearance: none; background: #222; margin: 15px 0; }
-        .btn-main { width: 100%; background: #fff; color: #000; font-weight: 900; padding: 20px; border-radius: 18px; font-size: 14px; letter-spacing: 2px; margin-top: 15px; }
+        .panel { background: #0a0a0a; border-radius: 25px; padding: 20px; border: 1px solid #1a1a1a; margin-top: 15px; }
+        input[type="range"] { width: 100%; accent-color: #f59e0b; margin: 10px 0; }
+        .go-btn { width: 100%; background: #fff; color: #000; font-weight: 900; padding: 18px; border-radius: 15px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="preview-area">
-        <div class="phone" id="phone-box">
-            <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=500" class="w-full h-full object-cover opacity-20">
-            <div id="sub">DENEME SATIRI</div>
-        </div>
-        <p class="text-[9px] text-center text-zinc-500 mt-2 font-bold tracking-widest">KONUMU PARMAKLA AYARLA</p>
+    <div class="phone" id="box">
+        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=500" class="w-full h-full object-cover opacity-20">
+        <div id="sub">ALTYAZI ÖNİZLEME</div>
     </div>
 
-    <div class="controls space-y-4">
-        <input type="text" id="url" placeholder="Reels / TikTok Linki" class="input-box focus:border-amber-500">
+    <div class="panel space-y-4">
+        <input type="text" id="url" placeholder="Video Linki" class="w-full p-4 bg-black border border-zinc-800 rounded-xl outline-none">
         
-        <div id="picker" class="flex justify-center my-4"></div>
+        <div id="picker" class="flex justify-center"></div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-1">
-                <label class="text-[10px] text-zinc-500 font-bold uppercase">Yazı Tipi</label>
-                <select id="font" onchange="sync()" class="input-box py-2 text-xs">
-                    <option value="'Inter'">Modern</option>
-                    <option value="'Bebas Neue'">Devasa</option>
-                    <option value="'Oswald'">Haberci</option>
-                    <option value="'Montserrat'">Zarif</option>
-                </select>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] text-zinc-500 font-bold uppercase">Arka Plan</label>
-                <select id="bg" onchange="sync()" class="input-box py-2 text-xs">
-                    <option value="1">KUTULU</option>
-                    <option value="0">SADE</option>
-                </select>
-            </div>
+        <div class="grid grid-cols-2 gap-2">
+            <select id="font" onchange="sync()" class="p-3 bg-black border border-zinc-800 rounded-lg text-xs">
+                <option value="'Inter'">Modern</option>
+                <option value="'Bebas Neue'">Devasa</option>
+                <option value="'Oswald'">Haberci</option>
+            </select>
+            <select id="bg" onchange="sync()" class="p-3 bg-black border border-zinc-800 rounded-lg text-xs">
+                <option value="1">KUTULU</option>
+                <option value="0">SADE</option>
+            </select>
         </div>
 
-        <div>
-            <label class="text-[10px] text-zinc-500 font-bold">YAZI BOYUTU: <span id="size-label">15px</span></label>
-            <input type="range" id="size" min="10" max="50" value="15" oninput="sync()">
-        </div>
-
-        <button onclick="generate()" id="btn" class="btn-main">VİDEOYU OLUŞTUR</button>
+        <input type="range" id="size" min="10" max="45" value="14" oninput="sync()">
+        <button onclick="go()" id="btn" class="go-btn">VİDEOYU OLUŞTUR</button>
     </div>
 
     <script>
         let x = 0, y = 0;
         const sub = document.getElementById('sub');
-        const picker = new iro.ColorPicker("#picker", { width: 150, color: "#fff", layout: [{ component: iro.ui.Wheel }] });
+        const picker = new iro.ColorPicker("#picker", { width: 140, color: "#fff" });
 
         function sync() {
-            const s = document.getElementById('size').value;
-            document.getElementById('size-label').innerText = s + 'px';
-            sub.style.fontSize = s + 'px';
+            sub.style.fontSize = document.getElementById('size').value + 'px';
             sub.style.fontFamily = document.getElementById('font').value;
             sub.style.color = picker.color.hexString;
             sub.style.background = document.getElementById('bg').value == "1" ? "rgba(0,0,0,0.8)" : "transparent";
         }
-
         picker.on('color:change', sync);
 
-        // Dokunmatik Sürükleme
-        let drag = false, sx, sy;
-        document.getElementById('phone-box').addEventListener('touchstart', (e) => {
-            if(e.target === sub) { drag = true; sx = e.touches[0].clientX - x; sy = e.touches[0].clientY - y; }
+        let d = false, sx, sy;
+        document.getElementById('box').addEventListener('touchstart', e => {
+            if(e.target===sub){d=true; sx=e.touches[0].clientX-x; sy=e.touches[0].clientY-y;}
         });
-        window.addEventListener('touchmove', (e) => {
-            if(drag) { x = e.touches[0].clientX - sx; y = e.touches[0].clientY - sy; sub.style.transform = `translate3d(${x}px, ${y}px, 0)`; }
-        }, { passive: false });
-        window.addEventListener('touchend', () => drag = false);
+        window.addEventListener('touchmove', e => {
+            if(d){x=e.touches[0].clientX-sx; y=e.touches[0].clientY-sy; sub.style.transform=`translate3d(${x}px,${y}px,0)`;}
+        });
+        window.addEventListener('touchend', () => d=false);
 
-        async function generate() {
-            const val = document.getElementById('url').value;
-            if(!val) return alert("Link boş!");
-            const b = document.getElementById('btn');
-            b.innerText = "İŞLENİYOR..."; b.disabled = true;
-
+        async function go() {
+            const u = document.getElementById('url').value; if(!u) return;
+            const b = document.getElementById('btn'); b.innerText = "YÜKLENİYOR..."; b.disabled = true;
             try {
-                const res = await fetch('https://esmaran-api.onrender.com/process', {
+                const r = await fetch('https://esmaran-api.onrender.com/process', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        url: val, color: picker.color.hexString, font_size: document.getElementById('size').value,
+                        url: u, color: picker.color.hexString, font_size: document.getElementById('size').value,
                         x_pos: x, y_pos: y, bg: document.getElementById('bg').value == "1"
                     })
                 });
-                const d = await res.json();
-                if(d.status === 'success') window.location.href = d.download_url;
-                else alert("Hata: " + d.message);
-            } catch(e) { alert("Sunucu uyanıyor, birazdan tekrar dene."); }
+                const res = await r.json();
+                if(res.status==='success') window.location.href = res.download_url;
+                else alert(res.message);
+            } catch(e) { alert("Sunucu uyanıyor..."); }
             finally { b.innerText = "VİDEOYU OLUŞTUR"; b.disabled = false; }
         }
-        sync();
     </script>
 </body>
 </html>
+
