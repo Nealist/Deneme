@@ -8,66 +8,70 @@
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --p: #f59e0b; }
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .panel { height: 100vh; display: flex; flex-direction: column; }
-        @media (min-width: 1024px) { .panel { flex-direction: row; } }
-        .sidebar { flex: 1; padding: 25px; background: #050505; border-right: 1px solid #111; overflow-y: auto; }
-        .viewer { flex: 0.8; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
-        .phone { width: 170px; aspect-ratio: 9/16; background: #111; border-radius: 30px; border: 3px solid #222; position: relative; overflow: hidden; }
+        .sidebar { background: #050505; border-right: 1px solid #111; overflow-y: auto; height: 100vh; }
+        .viewer { background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        .phone { width: 180px; aspect-ratio: 9/16; background: #111; border-radius: 30px; border: 3px solid #222; position: relative; overflow: hidden; }
         #sub { 
-            position: absolute; cursor: move; padding: 6px 12px; border-radius: 8px;
-            font-weight: 900; font-size: 16px; white-space: nowrap;
+            position: absolute; cursor: move; padding: 10px; border-radius: 8px;
+            font-weight: 900; text-align: center; display: flex; align-items: center; justify-content: center;
             user-select: none; touch-action: none; background: rgba(0,0,0,0.8); color: #fff;
-            top: 45%; left: 10%;
+            top: 40%; left: 10%; width: 120px; height: 40px; font-size: 14px;
         }
-        .input-style { background: #111; border: 1px solid #222; padding: 14px; border-radius: 12px; width: 100%; font-size: 13px; outline: none; }
+        .input-style { background: #111; border: 1px solid #222; padding: 12px; border-radius: 12px; width: 100%; font-size: 13px; outline: none; }
     </style>
 </head>
-<body>
+<body class="flex flex-col lg:flex-row">
 
-    <div class="panel">
-        <aside class="sidebar space-y-6">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-black italic">ESMARAN <span class="text-amber-500">AI</span></h1>
-                <div class="text-[9px] border border-amber-500/30 text-amber-500 px-2 py-1 rounded font-bold uppercase tracking-widest">Premium</div>
+    <aside class="sidebar w-full lg:w-1/3 p-6 space-y-6">
+        <h1 class="text-2xl font-black italic">ESMARAN <span class="text-amber-500">AI</span></h1>
+        
+        <input type="text" id="url" placeholder="Video linkini buraya yapıştır..." class="input-style">
+
+        <div class="bg-[#0a0a0a] p-4 rounded-2xl border border-white/5 space-y-4">
+            <div id="picker" class="flex justify-center"></div>
+            <div class="flex items-center justify-between text-xs font-bold px-2">
+                <span>KUTU OLSUN MU?</span>
+                <input type="checkbox" id="bg-on" checked onchange="sync()" class="w-5 h-5 accent-amber-500">
             </div>
+        </div>
 
-            <input type="text" id="url" placeholder="Video linkini buraya bırak..." class="input-style">
-
-            <div class="bg-[#0a0a0a] p-5 rounded-2xl border border-white/5 space-y-5 text-center">
-                <div id="picker" class="flex justify-center"></div>
-                <div class="flex items-center justify-between px-2">
-                    <span class="text-xs font-bold text-gray-400">ARKA PLAN KUTUSU</span>
-                    <input type="checkbox" id="bg-on" checked onchange="sync()" class="w-5 h-5 accent-amber-500">
-                </div>
+        <div class="space-y-4 bg-[#0a0a0a] p-4 rounded-2xl border border-white/5">
+            <div class="space-y-1">
+                <label class="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">Yazı Enlemi (Genişlik)</label>
+                <input type="range" id="w-range" min="50" max="170" value="120" oninput="sync()" class="w-full accent-blue-500">
             </div>
-
-            <div class="space-y-2">
-                <div class="flex justify-between text-[10px] font-bold text-gray-500"><span>KÜÇÜK</span><span>BÜYÜK</span></div>
-                <input type="range" id="size" min="12" max="50" value="20" oninput="sync()" class="w-full accent-amber-500">
+            <div class="space-y-1">
+                <label class="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">Yazı Boylamı (Yükseklik)</label>
+                <input type="range" id="h-range" min="20" max="150" value="40" oninput="sync()" class="w-full accent-amber-500">
             </div>
+        </div>
 
-            <button onclick="go()" id="btn" class="w-full bg-amber-500 text-black font-black py-5 rounded-2xl text-xs tracking-[4px] shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all">VİDEOYU OLUŞTUR</button>
-        </aside>
+        <button onclick="go()" id="btn" class="w-full bg-amber-500 text-black font-black py-5 rounded-2xl text-xs tracking-[4px] shadow-xl hover:bg-white transition-all">VİDEOYU OLUŞTUR</button>
+    </aside>
 
-        <main class="viewer">
-            <div class="phone" id="box">
-                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=500" class="w-full h-full object-cover opacity-20">
-                <div id="sub">ESMARAN AI</div>
-            </div>
-        </aside>
-    </div>
+    <main class="viewer flex-1">
+        <div class="phone" id="box">
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=500" class="w-full h-full object-cover opacity-20">
+            <div id="sub">ESMARAN AI</div>
+        </div>
+        <p class="absolute bottom-10 text-[10px] text-gray-600 font-bold tracking-[5px]">SÜRÜKLE VE ŞEKİLLENDİR</p>
+    </main>
 
     <script>
         let x = 0, y = 0;
         const sub = document.getElementById('sub');
-        const picker = new iro.ColorPicker("#picker", { width: 150, color: "#fff" });
+        const picker = new iro.ColorPicker("#picker", { width: 140, color: "#fff" });
 
         function sync() {
-            sub.style.fontSize = document.getElementById('size').value + 'px';
+            const w = document.getElementById('w-range').value;
+            const h = document.getElementById('h-range').value;
+            sub.style.width = w + 'px';
+            sub.style.height = h + 'px';
             sub.style.color = picker.color.hexString;
             sub.style.backgroundColor = document.getElementById('bg-on').checked ? 'rgba(0,0,0,0.8)' : 'transparent';
+            // Yazı boyutunu kutuya göre otomatik ufak tutalım
+            sub.style.fontSize = (h / 2.5) + 'px';
         }
 
         picker.on('color:change', sync);
@@ -75,17 +79,26 @@
         // Sürükleme
         let active = false, ix, iy;
         const box = document.getElementById('box');
-        const start = (e) => { ix = (e.touches ? e.touches[0].clientX : e.clientX) - x; iy = (e.touches ? e.touches[0].clientY : e.clientY) - y; if(e.target === sub) active = true; };
-        const move = (e) => { if(active) { x = (e.touches ? e.touches[0].clientX : e.clientX) - ix; y = (e.touches ? e.touches[0].clientY : e.clientY) - iy; sub.style.transform = `translate3d(${x}px, ${y}px, 0)`; } };
+        const start = (e) => { 
+            ix = (e.touches ? e.touches[0].clientX : e.clientX) - x; 
+            iy = (e.touches ? e.touches[0].clientY : e.clientY) - y; 
+            if(e.target === sub) active = true; 
+        };
+        const move = (e) => { 
+            if(active) { 
+                x = (e.touches ? e.touches[0].clientX : e.clientX) - ix; 
+                y = (e.touches ? e.touches[0].clientY : e.clientY) - iy; 
+                sub.style.transform = `translate3d(${x}px, ${y}px, 0)`; 
+            } 
+        };
         box.addEventListener('mousedown', start); window.addEventListener('mouseup', () => active = false); window.addEventListener('mousemove', move);
         box.addEventListener('touchstart', start); window.addEventListener('touchend', () => active = false); box.addEventListener('touchmove', move);
 
         async function go() {
             const val = document.getElementById('url').value;
-            if(!val) return alert("Link nerede kral?");
-            
+            if(!val) return alert("Link boş kral!");
             const btn = document.getElementById('btn');
-            btn.disabled = true; btn.innerText = "İŞLENİYOR...";
+            btn.disabled = true; btn.innerText = "ESMARAN AI İŞLİYOR...";
 
             try {
                 const res = await fetch('https://esmaran-api.onrender.com/process', {
@@ -94,17 +107,17 @@
                     body: JSON.stringify({
                         url: val,
                         color: picker.color.hexString,
-                        font_size: document.getElementById('size').value,
-                        bg: document.getElementById('bg-on').checked,
-                        y_pos: y
+                        w_val: document.getElementById('w-range').value,
+                        h_val: document.getElementById('h-range').value,
+                        x_pos: x,
+                        y_pos: y,
+                        bg: document.getElementById('bg-on').checked
                     })
                 });
                 const d = await res.json();
-                if(d.status === 'success') {
-                    btn.innerText = "İNDİRİLİYOR...";
-                    window.location.href = d.download_url;
-                } else alert("Hata: " + d.message);
-            } catch(e) { alert("Sunucu uyanıyor olabilir, tekrar dene!"); }
+                if(d.status === 'success') window.location.href = d.download_url;
+                else alert("Hata: " + d.message);
+            } catch(e) { alert("Sunucu uyanıyor, 1 dk sonra tekrar dene."); }
             finally { btn.disabled = false; btn.innerText = "VİDEOYU OLUŞTUR"; }
         }
     </script>
